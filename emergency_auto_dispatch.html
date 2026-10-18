@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Emergency Auto Dispatch</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="emg_auto_dispatch.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <header class="topbar">
+        <a class="brand" href="./">Emergency Auto Dispatch</a>
+        <nav class="role-selector" aria-label="Choose account type">
+          <a class="role-btn" data-role="user" href="?role=user">User</a>
+          <a class="role-btn" data-role="technician" href="?role=technician">Technician</a>
+          <a class="role-btn" data-role="admin" href="?role=admin">Admin</a>
+        </nav>
+        <p class="welcome-text">Welcome to Home Services</p>
+      </header>
+
+      <section class="welcome-panel" id="rolePrompt">
+        <p class="eyebrow">EMERGENCY AUTO DISPATCH</p>
+        <h1>Get the right help, faster.</h1>
+        <p class="subtitle">Choose your account type to sign in or create an account for your role.</p>
+        <img class="welcome-image" src="/workers-background.png" alt="Home service professionals working in customers' homes" />
+      </section>
+
+      <section class="auth-panel" id="authPanel" hidden>
+        <a class="back-link" href="./">&larr; All account types</a>
+        <p class="eyebrow" id="roleLabel">ACCOUNT</p>
+        <h1 id="authHeading">Sign in</h1>
+        <p class="subtitle" id="authSubtitle">Use your account credentials to continue.</p>
+
+        <div class="auth-tabs" role="tablist" aria-label="Account action">
+          <button class="auth-tab active" id="loginTab" type="button" role="tab" aria-selected="true">Sign in</button>
+          <button class="auth-tab" id="signupTab" type="button" role="tab" aria-selected="false">Create account</button>
+        </div>
+
+        <form id="authForm">
+          <label for="username">Username</label>
+          <input id="username" name="username" type="text" autocomplete="username" minlength="3" maxlength="50" required />
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" minlength="8" maxlength="200" required />
+          <div class="confirm-password-field" id="confirmPasswordField" hidden>
+            <label for="confirmPassword">Confirm password</label>
+            <input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" minlength="8" maxlength="200" />
+          </div>
+          <button class="submit-btn" id="submitButton" type="submit">Sign in</button>
+        </form>
+        <p id="statusMessage" class="status-text" role="status" aria-live="polite"></p>
+        <p class="admin-note" id="adminNote" hidden>Admin accounts are created by the system administrator.</p>
+      </section>
+
+      <section class="dashboard-panel" id="dashboardPanel" aria-labelledby="dashboardHeading" hidden>
+        <p class="eyebrow" id="dashboardRole">ACCOUNT</p>
+        <h1 id="dashboardHeading">Welcome</h1>
+        <p class="subtitle" id="dashboardSubtitle"></p>
+        <div class="account-summary">
+          <div class="account-detail">
+            <span>Username</span>
+            <strong id="dashboardUsername"></strong>
+          </div>
+          <div class="account-detail">
+            <span>Account type</span>
+            <strong id="dashboardRoleName"></strong>
+          </div>
+          <div class="account-detail">
+            <span>Sign-in status</span>
+            <strong class="signed-in-status">Signed in</strong>
+          </div>
+        </div>
+        <section id="technicianProfilePanel" class="technician-workspace-panel" hidden aria-labelledby="technicianProfileHeading">
+          <div class="section-heading">
+            <div>
+              <h2 id="technicianProfileHeading">Professional profile</h2>
+              <p class="section-description">Complete your contact, service area, rate and category so dispatch can match you to suitable work.</p>
+            </div>
+            <div class="technician-state-badges">
+              <span id="technicianAvailabilityBadge" class="availability-badge unavailable">Unavailable</span>
+              <span id="technicianOnlineBadge" class="availability-badge offline">Offline</span>
+            </div>
+          </div>
+          <form id="technicianProfileForm" class="technician-profile-form" enctype="multipart/form-data">
+            <div class="technician-profile-photo">
+              <img id="technicianProfilePreview" alt="Technician profile photo" hidden />
+              <span id="technicianProfileInitials" aria-hidden="true">T</span>
+            </div>
+            <label for="technicianProfileImage">Profile photo (JPEG, PNG or WebP, up to 5 MB)</label>
+            <input id="technicianProfileImage" name="profileImage" type="file" accept="image/jpeg,image/png,image/webp" />
+            <div class="profile-form-grid">
+              <label for="technicianPhone">Contact phone <span class="required-mark">*</span>
+                <input id="technicianPhone" name="phone" type="tel" autocomplete="tel" maxlength="30" required />
+              </label>
+              <label for="technicianServiceArea">Service location / area <span class="required-mark">*</span>
+                <input id="technicianServiceArea" name="serviceArea" type="text" maxlength="500" placeholder="City, neighborhood or coverage area" required />
+              </label>
+              <label for="technicianSkillCategory">Main service category <span class="required-mark">*</span>
+                <select id="technicianSkillCategory" name="skillCategory" required>
+                  <option value="">Loading categories...</option>
+                </select>
+              </label>
+              <label for="technicianServiceRate">Starting service rate (₹) <span class="required-mark">*</span>
+                <input id="technicianServiceRate" name="serviceRate" type="number" min="1" max="99999999.99" step="0.01" required />
+              </label>
+            </div>
+            <label class="checkbox-label technician-availability-toggle" for="technicianIsAvailable">
+              <input id="technicianIsAvailable" name="isAvailable" type="checkbox" value="true" />
+              Available to receive new jobs
+            </label>
+            <details class="optional-profile-details">
+              <summary>Optional professional details</summary>
+              <div class="profile-form-grid">
+                <label for="technicianSkills">Skills
+                  <textarea id="technicianSkills" name="skills" rows="2" maxlength="1000" placeholder="Relevant skills and certifications"></textarea>
+                </label>
+                <label for="technicianAchievements">Achievements
+                  <textarea id="technicianAchievements" name="achievements" rows="2" maxlength="2000"></textarea>
+                </label>
+                <label for="technicianEducation">Education or training
+                  <textarea id="technicianEducation" name="education" rows="2" maxlength="500"></textarea>
+                </label>
+              </div>
+            </details>
+            <button id="saveTechnicianProfileButton" class="submit-btn" type="submit">Save profile</button>
+            <p id="technicianProfileStatus" class="status-text" role="status" aria-live="polite"></p>
+          </form>
+        </section>
+        <section id="technicianJobsPanel" class="technician-workspace-panel" hidden aria-labelledby="technicianJobsHeading">
+          <div class="section-heading">
+            <div>
+              <h2 id="technicianJobsHeading">Assigned work</h2>
+              <p class="section-description">Review your assigned jobs, mark when you are ready, and send completion updates to admin.</p>
+            </div>
+            <button id="refreshTechnicianJobsButton" class="secondary-btn" type="button">Refresh jobs</button>
+          </div>
+          <p id="technicianJobsStatus" class="status-text" role="status" aria-live="polite"></p>
+          <div id="technicianJobsList" class="jobs-list" aria-live="polite"></div>
+        </section>
+        <section class="location-sharing-panel" id="technicianLocationPanel" hidden aria-labelledby="technicianLocationHeading">
+          <div class="section-heading">
+            <div>
+              <h2 id="technicianLocationHeading">Technician location</h2>
+              <p class="section-description">Online means your live GPS location was refreshed in the last 30 seconds. Availability is managed separately.</p>
+            </div>
+            <button class="submit-btn" id="startLocationSharingButton" type="button">Start sharing location</button>
+          </div>
+          <p id="technicianLocationStatus" class="status-text" role="status" aria-live="polite"></p>
+          <p id="technicianMapStatus" class="status-text" role="status" aria-live="polite"></p>
+          <div class="map-canvas" id="technicianMap" role="region" aria-label="Your current location map"></div>
+        </section>
+        <button class="sign-out-btn" id="signOutButton" type="button">Sign out</button>
+        <p id="dashboardStatus" class="status-text" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="dashboard-panel user-services-panel" id="userServicesPanel" aria-labelledby="userServicesHeading" hidden>
+        <div class="user-services-heading">
+          <div>
+            <p class="eyebrow">AVAILABLE SERVICES</p>
+            <h1 id="userServicesHeading">Choose a Service</h1>
+            <p class="subtitle" id="userServicesWelcome"></p>
+          </div>
+          <button class="sign-out-btn" id="userSignOutButton" type="button">Sign out</button>
+        </div>
+
+        <div class="service-filters">
+          <label for="userServiceSearch">Search services</label>
+          <input id="userServiceSearch" type="search" placeholder="Try plumbing or emergency" />
+          <label for="userServiceCategory">Category</label>
+          <select id="userServiceCategory">
+            <option value="">All categories</option>
+          </select>
+        </div>
+        <p id="userServicesStatus" class="status-text" role="status" aria-live="polite"></p>
+        <div class="user-service-groups" id="userServiceGrid" aria-live="polite"></div>
+        <p id="userRequestStatus" class="status-text" role="status" aria-live="polite"></p>
+
+        <form class="user-request-form" id="userRequestForm" hidden>
+          <div class="section-heading">
+            <div>
+              <h2>Request <span id="requestServiceName"></span></h2>
+              <p class="section-description">Share your contact details so the team can follow up.</p>
+            </div>
+          </div>
+          <input id="requestServiceId" name="serviceId" type="hidden" />
+          <label for="requestPhone">Phone number</label>
+          <input id="requestPhone" name="customerPhone" type="tel" autocomplete="tel" maxlength="30" required />
+          <label for="requestAddress">Service address</label>
+          <textarea id="requestAddress" name="address" rows="2" maxlength="500" required></textarea>
+          <div class="location-capture">
+            <button class="secondary-btn" id="captureCustomerLocationButton" type="button">Use my current location</button>
+            <p id="customerLocationStatus" class="section-description" role="status" aria-live="polite">Share your current location for automatic dispatch; without it, your request remains unassigned.</p>
+          </div>
+          <label for="requestDetails">Additional details (optional)</label>
+          <textarea id="requestDetails" name="details" rows="3" maxlength="2000"></textarea>
+          <div class="form-actions">
+            <button class="submit-btn" id="requestSubmitButton" type="submit">Send request</button>
+            <button class="secondary-btn" id="cancelRequestButton" type="button">Cancel</button>
+          </div>
+        </form>
+
+        <section class="tracking-panel" aria-labelledby="customerTrackingHeading">
+          <div class="section-heading">
+            <div>
+              <h2 id="customerTrackingHeading">Track your service</h2>
+              <p class="section-description">Your request and assigned technician locations refresh automatically.</p>
+            </div>
+            <button class="secondary-btn" id="refreshCustomerJobsButton" type="button">Refresh</button>
+          </div>
+          <p id="customerTrackingStatus" class="status-text" role="status" aria-live="polite"></p>
+          <div class="map-canvas" id="customerMap" role="region" aria-label="Your service and technician locations map"></div>
+          <div class="tracking-jobs-list" id="customerJobsList" aria-live="polite"></div>
+        </section>
+      </section>
+
+      <section class="dashboard-panel admin-dashboard" id="adminDashboard" aria-labelledby="adminHeading" hidden>
+        <div class="admin-heading">
+          <div>
+            <p class="eyebrow">ADMIN WORKSPACE</p>
+            <h1 id="adminHeading">Manage operations</h1>
+            <p class="subtitle" id="adminWelcome"></p>
+          </div>
+          <button class="sign-out-btn" id="adminSignOutButton" type="button">Sign out</button>
+        </div>
+
+        <div class="admin-tabs" role="tablist" aria-label="Admin sections">
+          <button class="admin-tab active" id="servicesTab" type="button" role="tab" aria-selected="true">Services</button>
+          <button class="admin-tab" id="techniciansTab" type="button" role="tab" aria-selected="false">Technicians</button>
+          <button class="admin-tab" id="jobsTab" type="button" role="tab" aria-selected="false">Jobs</button>
+        </div>
+
+        <section id="servicesSection" aria-labelledby="servicesHeading">
+          <div class="section-heading">
+            <div>
+              <h2 id="servicesHeading">Services</h2>
+              <p class="section-description">Add services, update their details, and control availability.</p>
+            </div>
+          </div>
+
+          <form id="serviceForm" class="service-form" enctype="multipart/form-data">
+            <input id="serviceId" name="serviceId" type="hidden" />
+            <label for="serviceName">Service name</label>
+            <input id="serviceName" name="serviceName" type="text" maxlength="100" required />
+
+            <label for="serviceCategory">Category</label>
+            <input id="serviceCategory" name="category" type="text" maxlength="100" placeholder="For example, Home Repairs" required />
+
+            <label for="serviceDescription">Description</label>
+            <textarea id="serviceDescription" name="description" rows="3" maxlength="2000"></textarea>
+
+            <label for="serviceImage">Service image (JPEG, PNG, or WebP; up to 5 MB)</label>
+            <input id="serviceImage" name="image" type="file" accept="image/jpeg,image/png,image/webp" />
+            <img id="serviceImagePreview" class="image-preview" alt="Selected service image preview" hidden />
+
+            <label class="checkbox-label" for="serviceActive">
+              <input id="serviceActive" name="isActive" type="checkbox" checked />
+              Service is active
+            </label>
+
+            <div class="form-actions">
+              <button class="submit-btn" id="serviceSubmitButton" type="submit">Add service</button>
+              <button class="secondary-btn" id="cancelServiceEditButton" type="button" hidden>Cancel edit</button>
+            </div>
+            <p id="serviceStatus" class="status-text" role="status" aria-live="polite"></p>
+          </form>
+
+          <div class="service-grid" id="serviceGrid" aria-live="polite"></div>
+        </section>
+
+        <section id="techniciansSection" aria-labelledby="techniciansHeading" hidden>
+          <div class="section-heading">
+            <div>
+              <h2 id="techniciansHeading">Technicians</h2>
+              <p class="section-description">Set each technician's service category and availability for automatic dispatch.</p>
+            </div>
+            <button class="secondary-btn" id="refreshTechniciansButton" type="button">Refresh technicians</button>
+          </div>
+          <p id="techniciansStatus" class="status-text" role="status" aria-live="polite"></p>
+          <div class="jobs-list" id="techniciansList" aria-live="polite"></div>
+        </section>
+
+        <section id="jobsSection" aria-labelledby="jobsHeading" hidden>
+          <div class="section-heading">
+            <div>
+              <h2 id="jobsHeading">Jobs</h2>
+              <p class="section-description">Review requests, assign technicians, and track both locations.</p>
+            </div>
+            <button class="secondary-btn" id="refreshJobsButton" type="button">Refresh jobs</button>
+          </div>
+          <div class="admin-live-map">
+            <div class="section-heading">
+              <div>
+                <h3>Live dispatch map</h3>
+                <p class="section-description">Technicians sharing location and customer pins for active jobs.</p>
+              </div>
+            </div>
+            <p id="adminMapStatus" class="status-text" role="status" aria-live="polite"></p>
+            <div class="map-canvas" id="adminMap" role="region" aria-label="Technician and customer live locations map"></div>
+          </div>
+          <p id="jobsStatus" class="status-text" role="status" aria-live="polite"></p>
+          <div class="jobs-list" id="jobsList" aria-live="polite"></div>
+        </section>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-footer-content">
+        <div>
+          <a class="footer-brand" href="./">Emergency Auto Dispatch</a>
+          <p>Connecting customers with available local service professionals.</p>
+        </div>
+        <nav aria-label="Useful links">
+          <a href="?role=user">Request a service</a>
+          <a href="?role=technician">Technician workspace</a>
+          <a href="?role=admin">Admin workspace</a>
+        </nav>
+        <div>
+          <strong>Support</strong>
+          <p>For account or booking help, contact your service administrator. In an emergency, contact your local emergency services.</p>
+        </div>
+      </div>
+      <p class="footer-bottom">© <span id="footerYear"></span> Emergency Auto Dispatch · Home Services</p>
+    </footer>
+    <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
+    <script src="emg_auto_dispatch.js" defer></script>
+  </body>
+</html>

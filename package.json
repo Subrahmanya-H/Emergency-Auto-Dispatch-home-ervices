@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.7",
+    "multer": "^2.0.2",
+    "pg": "^8.23.1"
+  }
+}

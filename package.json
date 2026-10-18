@@ -4,6 +4,7 @@
     "test": "node --test"
   },
   "dependencies": {
+    "@vercel/speed-insights": "^2.0.0",
     "dotenv": "^18.0.7",
     "multer": "^2.0.2",
     "pg": "^8.23.1"

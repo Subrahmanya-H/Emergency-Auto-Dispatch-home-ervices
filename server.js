@@ -69,7 +69,8 @@ const staticFiles = Object.freeze({
 	'/emergency_auto_dispatch.html': ['emergency_auto_dispatch.html', 'text/html; charset=utf-8'],
 	'/emg_auto_dispatch.css': ['emg_auto_dispatch.css', 'text/css; charset=utf-8'],
 	'/emg_auto_dispatch.js': ['emg_auto_dispatch.js', 'text/javascript; charset=utf-8'],
-	'/workers-background.png': ['workers-background.png', 'image/png']
+	'/workers-background.png': ['workers-background.png', 'image/png'],
+	'/speed-insights-init.js': ['speed-insights-init.js', 'text/javascript; charset=utf-8']
 });
 
 function sendJson(response, statusCode, payload) {
@@ -1700,6 +1701,24 @@ async function handleRequest(request, response) {
 		response.writeHead(200, { 'Content-Type': contentType });
 		response.end(contents);
 		return;
+	}
+	// Serve Speed Insights module files
+	if (request.method === 'GET' && requestUrl.pathname.startsWith('/node_modules/@vercel/speed-insights/')) {
+		const filePath = path.join(__dirname, requestUrl.pathname);
+		try {
+			const contents = await fs.readFile(filePath);
+			const contentType = requestUrl.pathname.endsWith('.mjs') || requestUrl.pathname.endsWith('.js')
+				? 'text/javascript; charset=utf-8'
+				: requestUrl.pathname.endsWith('.map')
+				? 'application/json; charset=utf-8'
+				: 'application/octet-stream';
+			response.writeHead(200, { 'Content-Type': contentType });
+			response.end(contents);
+			return;
+		} catch {
+			sendJson(response, 404, { message: 'Not found.' });
+			return;
+		}
 	}
 	sendJson(response, 404, { message: 'Not found.' });
 }
